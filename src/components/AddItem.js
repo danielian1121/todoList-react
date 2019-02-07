@@ -1,15 +1,51 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import calander from '../img/calendar.svg'
+import star from '../img/star.svg'
+import starSelect from '../img/star_select.svg'
+import calendar from '../img/calendar.svg'
 import comment from '../img/comment.svg'
 
 const style = {
   root: {
     display:         'flex',
     flexDirection:   'column',
-    width:           '38.75rem',
+    width:           '38.75rem'
+  },
+  title: {
+    display:         'flex',
+    marginBottom:    '1px',
+    width:           '100%',
+    height:          '4.75rem',
     backgroundColor: '#F2F2F2'
+  },
+  titleInput: {
+    marginTop:       '1.5rem',
+    marginLeft:      '4.5rem',
+    width:           '27.25rem',
+    height:          '1.75rem',
+    fontSize:        '1.5rem',
+    backgroundColor: '#F2F2F2',
+    border:          '0',
+    '&::placeholder': {
+      color: '#000000',
+      opacity: '1'
+    },
+    '&::-ms-input-placeholder': {
+      color: '#000000'
+    },
+    '&:-ms-input-placeholder': {
+      color: '#000000'
+    }
+  },
+  detailPage: {
+    backgroundColor: '#F2F2F2'
+  },
+  star: {
+    marginTop: '1.8rem',
+    width:     '1.5rem',
+    height:    '1.5rem',
+    cursor:    'pointer'
   },
   label: {
     marginTop:  '1.5rem',
@@ -65,14 +101,20 @@ class AddItem extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      date:    '',
-      hour:    '',
-      comment: ''
+      title:      '',
+      date:       '',
+      hour:       '',
+      comment:    '',
+      starSelect: false
     }
   }
 
   handleSubmit = (e) => {
     e.preventDefault()
+  }
+
+  handleTitleChange = (e) => {
+    this.setState({title: e.target.value})
   }
 
   handleDateChange = (e) => {
@@ -90,38 +132,51 @@ class AddItem extends React.Component {
   handleAddTask = (e) => {
     if (e.target instanceof HTMLButtonElement) {
       this.props.addTask({
-        deadLine: `${this.state.date} ${this.state.hour}`,
-        comment:  `${this.state.comment}`
+        title:      `${this.state.title}`,
+        deadLine:   [this.state.date, this.state.hour].filter(element => element),
+        comment:    `${this.state.comment}`,
+        starSelect: this.state.starSelect
       })
       this.props.hideAddItem()
     }
+  }
+
+  handleStar = (e) => {
+    if(e.target instanceof HTMLImageElement)
+      this.setState({
+        starSelect: !this.state.starSelect
+      })
   }
 
   render() {
     const { classes, hideAddItem } = this.props
     const placeholder = 'Type your memo here...'
     return (
-      <div>
         <form className={classes.root} onSubmit={this.handleSubmit}>
-          <div>
-            <img className={classes.icon} src={calander} alt='calander'></img>
-            <label className={classes.label}>DeadLine</label>
+          <div className={classes.title}>
+            <input className={classes.titleInput} placeholder='Type Title Here...' value={this.state.title} onChange={this.handleTitleChange}/>
+            <img className={classes.star} src={this.state.starSelect ? starSelect : star} alt='star' onClick={this.handleStar}></img>
           </div>
-          <div>
-            <input className={classes.dateInput} type='date' onChange={this.handleDateChange}/>
-            <input className={classes.hourInput} type='time' onChange={this.handleHourChange}/>
-          </div>
-          <div>
-            <img className={classes.icon} src={comment} alt='comment'></img>
-            <label className={classes.label}>Comment</label>
-          </div>
-          <textarea className={classes.textarea} placeholder={placeholder} rows='4' cols='50' onChange={this.handleCommentChange}/>
-          <div>
-            <button className={classes.cancelButton} onClick={hideAddItem}>{'X Cancel'}</button>
-            <button className={classes.submitButton} onClick={this.handleAddTask}>{'+ Add Task'}</button>
+          <div className={classes.detailPage}>
+            <div>
+              <img className={classes.icon} src={calendar} alt='calendar'></img>
+              <label className={classes.label}>DeadLine</label>
+            </div>
+            <div>
+              <input className={classes.dateInput} type='date' value={this.state.date} onChange={this.handleDateChange}/>
+              <input className={classes.hourInput} type='time' value={this.state.hour} onChange={this.handleHourChange}/>
+            </div>
+            <div>
+              <img className={classes.icon} src={comment} alt='comment'></img>
+              <label className={classes.label}>Comment</label>
+            </div>
+            <textarea className={classes.textarea} placeholder={placeholder} rows='4' cols='50' value={this.state.comment} onChange={this.handleCommentChange}/>
+            <div>
+              <button className={classes.cancelButton} onClick={hideAddItem}>{'X Cancel'}</button>
+              <button className={classes.submitButton} onClick={this.handleAddTask}>{'+ Add Task'}</button>
+            </div>
           </div>
         </form>
-      </div>
     )
   }
 }
