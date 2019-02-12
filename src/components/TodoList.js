@@ -4,23 +4,21 @@ import { withStyles } from '@material-ui/core/styles'
 
 const style = {
   root: {
-    display:       'flex',
+    display: 'flex',
     flexDirection: 'column',
-    alignItems:    'center',
+    alignItems: 'center',
     listStyleType: 'none',
-    padding:       '0'
+    padding: '0'
   }
 }
 
-const TodoList = ({children, classes}) => {
-  return (
-    <ul className={classes.root}>{children}</ul>
-  )
+const TodoList = ({ children, classes }) => {
+  return <ul className={classes.root}>{children}</ul>
 }
 
 // 加入props的資料類型驗証
 TodoList.propTypes = {
-  classes:  PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
   children: PropTypes.React
 }
 
