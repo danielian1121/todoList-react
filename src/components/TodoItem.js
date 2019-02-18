@@ -23,6 +23,15 @@ const style = {
     fontFamily: 'Roboto-Medium',
     maxHeight: 'max-content'
   },
+  tilteFinish: {
+    marginLeft: '1rem',
+    marginTop: '1.1rem',
+    fontSize: '1.8rem',
+    fontFamily: 'Roboto-Medium',
+    maxHeight: 'max-content',
+    textDecoration: 'line-through',
+    color: '#9B9B9B'
+  },
   gridContainer: {
     height: '100%'
   },
@@ -130,9 +139,11 @@ class TodoItem extends React.Component {
       content,
       starClick,
       index,
+      type,
       isDragging,
       connectDragSource,
-      connectDropTarget
+      connectDropTarget,
+      checkBox
     } = this.props
 
     const opacity = isDragging ? 0 : 1
@@ -149,10 +160,14 @@ class TodoItem extends React.Component {
         >
           <Grid className={classes.gridContainer} container>
             <Grid className={classes.gridItem} item xs={1}>
-              <input type='checkbox' className={classes.checkBox} />
+              <input
+                type='checkbox'
+                className={classes.checkBox}
+                onChange={() => checkBox(index, type)}
+              />
             </Grid>
             <Grid
-              className={`${classes.gridItem} ${classes.title}`}
+              className={`${classes.gridItem} ${type ? classes.tilteFinish : classes.title}`}
               item
               xs={9}
             >
@@ -163,7 +178,7 @@ class TodoItem extends React.Component {
                 className={classes.star}
                 alt='star'
                 src={content.starSelect ? starSelect : star}
-                onClick={() => starClick(index)}
+                onClick={type ? null : () => starClick(index)}
               />
             </Grid>
             <Grid className={classes.gridItem} item xs={12}>
@@ -198,7 +213,12 @@ TodoItem.propTypes = {
   classes: PropTypes.object.isRequired,
   content: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
-  starClick: PropTypes.func.isRequired
+  starClick: PropTypes.func.isRequired,
+  checkBox: PropTypes.func.isRequired,
+  type: PropTypes.number.isRequired,
+  isDragging: PropTypes.bool,
+  connectDragSource: PropTypes.func,
+  connectDropTarget: PropTypes.func
 }
 
 export default DropTarget('todoItem', cardTarget, connect => ({

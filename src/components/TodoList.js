@@ -12,14 +12,14 @@ const style = {
   }
 }
 
-const TodoList = ({ children, classes }) => {
-  return <ul className={classes.root}>{children}</ul>
-}
+const TodoList = ({ children, classes }) => (
+  <ul className={classes.root}>{children}</ul>
+)
 
 // 加入props的資料類型驗証
 TodoList.propTypes = {
   classes: PropTypes.object.isRequired,
-  children: PropTypes.React
+  children: PropTypes.array
 }
 
 // 匯出TextInput模組

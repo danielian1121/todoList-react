@@ -18,7 +18,7 @@
   ],
   "rules": {
     "semi": [2, "never"],
-    "arrow-body-style": ["error", "always"],
+    "arrow-body-style": ["error", "as-needed"],
     "comma-dangle": ["error", "never"],
     "no-console": 0,
     "allowForLoopAfterthoughts": true

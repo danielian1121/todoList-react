@@ -31,6 +31,7 @@ class App extends React.Component {
     super(props)
     this.state = {
       task: [],
+      doneTask: [],
       showButtonOrAdd: true,
       count: 0
     }
@@ -44,7 +45,11 @@ class App extends React.Component {
       starSelect
     }
     let newTask = [task, ...this.state.task]
-    if (newTask.length > 1 && newTask[0].starSelect === false && newTask[1].starSelect === true)
+    if (
+      newTask.length > 1 &&
+      newTask[0].starSelect === false &&
+      newTask[1].starSelect === true
+    )
       newTask = newTask.sort((A, B) => B.starSelect - A.starSelect)
     this.setState({
       task: newTask
@@ -72,17 +77,44 @@ class App extends React.Component {
   }
 
   moveCard = (dragIndex, hoverIndex) => {
-		const { task } = this.state
-		const dragTask = task[dragIndex]
+    const { task } = this.state
+    const dragTask = task[dragIndex]
 
-		this.setState(
-			update(this.state, {
-				task: {
-					$splice: [[dragIndex, 1], [hoverIndex, 0, dragTask]]
-				}
-			})
-		)
-	}
+    this.setState(
+      update(this.state, {
+        task: {
+          $splice: [[dragIndex, 1], [hoverIndex, 0, dragTask]]
+        }
+      })
+    )
+  }
+
+  checkBox = (index, type) => {
+    if (!type) {
+      let newTask = this.state.task
+      let newDoneTask = newTask[index]
+      newDoneTask.starSelect = false
+      newTask = [...newTask.slice(0, index),...newTask.slice(index + 1)]
+      this.setState({
+        task: newTask,
+        doneTask: [
+          ...this.state.doneTask,
+          newDoneTask
+        ]
+      })
+    } else {
+      let newDoneTask = this.state.doneTask
+      let newTask = newDoneTask[index]
+      newDoneTask = [...newDoneTask.slice(0, index),...newDoneTask.slice(index + 1)]
+      this.setState({
+        task: [
+          ...this.state.task,
+          newTask
+        ],
+        doneTask: newDoneTask
+      })
+    }
+  }
 
   render() {
     const { classes } = this.props
@@ -96,17 +128,28 @@ class App extends React.Component {
           <AddItem addTask={this.addTask} hideAddItem={this.handleButtonShow} />
         )}
         <TodoList>
-          {this.state.task.map((element, index) => {
-            return (
-              <TodoItem
-                key={element.id}
-                index={index}
-                content={element}
-                starClick={this.handleStarClick}
-                moveCard={this.moveCard}
-              />
-            )
-          })}
+          {this.state.task.map((element, index) => (
+            <TodoItem
+              key={element.id}
+              index={index}
+              content={element}
+              starClick={this.handleStarClick}
+              moveCard={this.moveCard}
+              checkBox={this.checkBox}
+              type={0} // Not finish
+            />
+          ))}
+          {this.state.doneTask.map((element, index) => (
+            <TodoItem
+              key={element.id}
+              index={index}
+              content={element}
+              starClick={this.handleStarClick}
+              moveCard={this.moveCard}
+              checkBox={this.checkBox}
+              type={1} // Finish
+            />
+          ))}
         </TodoList>
       </div>
     )
