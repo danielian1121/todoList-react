@@ -7,6 +7,8 @@ import update from 'immutability-helper'
 import TodoList from './TodoList'
 import TodoItem from './TodoItem'
 import AddItem from './AddItem'
+import AppBar from './AppBar'
+import PageButton from './PageButton'
 
 const style = {
   root: {
@@ -33,7 +35,9 @@ class App extends React.Component {
       task: [],
       doneTask: [],
       showButtonOrAdd: true,
-      count: 0
+      count: 0,
+      page: 0,
+      select: 0
     }
   }
   addTask = ({ title, deadLine, comment, starSelect }) => {
@@ -52,14 +56,14 @@ class App extends React.Component {
     )
       newTask = newTask.sort((A, B) => B.starSelect - A.starSelect)
     this.setState({
-      task: newTask
+      task: newTask,
+      count: this.state.count + 1
     })
   }
 
   handleButtonShow = () => {
     this.setState({
-      showButtonOrAdd: !this.state.showButtonOrAdd,
-      count: this.state.count + 1
+      showButtonOrAdd: !this.state.showButtonOrAdd
     })
   }
 
@@ -73,6 +77,12 @@ class App extends React.Component {
         Object.assign({}, newTask[index]),
         ...newTask.slice(index + 1)
       ]
+    })
+  }
+
+  handlePageButtonClick = index => {
+    this.setState({
+      select: index
     })
   }
 
@@ -94,25 +104,86 @@ class App extends React.Component {
       let newTask = this.state.task
       let newDoneTask = newTask[index]
       newDoneTask.starSelect = false
-      newTask = [...newTask.slice(0, index),...newTask.slice(index + 1)]
+      newTask = [...newTask.slice(0, index), ...newTask.slice(index + 1)]
       this.setState({
         task: newTask,
-        doneTask: [
-          ...this.state.doneTask,
-          newDoneTask
-        ]
+        doneTask: [...this.state.doneTask, newDoneTask]
       })
     } else {
       let newDoneTask = this.state.doneTask
       let newTask = newDoneTask[index]
-      newDoneTask = [...newDoneTask.slice(0, index),...newDoneTask.slice(index + 1)]
+      newDoneTask = [
+        ...newDoneTask.slice(0, index),
+        ...newDoneTask.slice(index + 1)
+      ]
       this.setState({
-        task: [
-          ...this.state.task,
-          newTask
-        ],
+        task: [...this.state.task, newTask],
         doneTask: newDoneTask
       })
+    }
+  }
+
+  handleSelectPage = select => {
+    switch (select) {
+      case 0:
+        return (
+          <TodoList>
+            {this.state.task.map((element, index) => (
+              <TodoItem
+                key={element.id}
+                index={index}
+                content={element}
+                starClick={this.handleStarClick}
+                moveCard={this.moveCard}
+                checkBox={this.checkBox}
+                type={0} // Not finish
+              />
+            ))}
+            {this.state.doneTask.map((element, index) => (
+              <TodoItem
+                key={element.id}
+                index={index}
+                content={element}
+                starClick={this.handleStarClick}
+                moveCard={this.moveCard}
+                checkBox={this.checkBox}
+                type={1} // Finish
+              />
+            ))}
+          </TodoList>
+        )
+      case 1:
+        return (
+          <TodoList>
+            {this.state.task.map((element, index) => (
+              <TodoItem
+                key={element.id}
+                index={index}
+                content={element}
+                starClick={this.handleStarClick}
+                moveCard={this.moveCard}
+                checkBox={this.checkBox}
+                type={0} // Not finish
+              />
+            ))}
+          </TodoList>
+        )
+      default:
+        return (
+          <TodoList>
+            {this.state.doneTask.map((element, index) => (
+              <TodoItem
+                key={element.id}
+                index={index}
+                content={element}
+                starClick={this.handleStarClick}
+                moveCard={this.moveCard}
+                checkBox={this.checkBox}
+                type={1} // Finish
+              />
+            ))}
+          </TodoList>
+        )
     }
   }
 
@@ -120,6 +191,26 @@ class App extends React.Component {
     const { classes } = this.props
     return (
       <div className={classes.root}>
+        <AppBar page={this.state.page}>
+          <PageButton
+            text='My Tasks'
+            index={0}
+            select={this.state.select}
+            cliceEvent={this.handlePageButtonClick}
+          />
+          <PageButton
+            text='In Progress'
+            index={1}
+            select={this.state.select}
+            cliceEvent={this.handlePageButtonClick}
+          />
+          <PageButton
+            text='Completed'
+            index={2}
+            select={this.state.select}
+            cliceEvent={this.handlePageButtonClick}
+          />
+        </AppBar>
         {this.state.showButtonOrAdd ? (
           <button className={classes.addButton} onClick={this.handleButtonShow}>
             {'+ Add Task'}
@@ -127,30 +218,7 @@ class App extends React.Component {
         ) : (
           <AddItem addTask={this.addTask} hideAddItem={this.handleButtonShow} />
         )}
-        <TodoList>
-          {this.state.task.map((element, index) => (
-            <TodoItem
-              key={element.id}
-              index={index}
-              content={element}
-              starClick={this.handleStarClick}
-              moveCard={this.moveCard}
-              checkBox={this.checkBox}
-              type={0} // Not finish
-            />
-          ))}
-          {this.state.doneTask.map((element, index) => (
-            <TodoItem
-              key={element.id}
-              index={index}
-              content={element}
-              starClick={this.handleStarClick}
-              moveCard={this.moveCard}
-              checkBox={this.checkBox}
-              type={1} // Finish
-            />
-          ))}
-        </TodoList>
+        {this.handleSelectPage(this.state.select)}
       </div>
     )
   }

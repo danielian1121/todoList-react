@@ -110,6 +110,7 @@ class AddItem extends React.Component {
   }
 
   handleSubmit = e => {
+    this.handleAddTask()
     e.preventDefault()
   }
 
@@ -129,10 +130,10 @@ class AddItem extends React.Component {
     this.setState({ comment: e.target.value })
   }
 
-  handleAddTask = e => {
+  handleAddTask = () => {
     if (!this.state.title) {
       alert('Title should not be empty')
-    } else if (e.target instanceof HTMLButtonElement) {
+    } else {
       this.props.addTask({
         title: `${this.state.title}`,
         deadLine: [this.state.date, this.state.hour].filter(element => element),

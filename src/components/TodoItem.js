@@ -148,61 +148,68 @@ class TodoItem extends React.Component {
 
     const opacity = isDragging ? 0 : 1
 
+    const htmlContent = () => (
+      <li
+        className={classes.root}
+        style={
+          content.starSelect
+            ? { backgroundColor: '#FFF2DC', opacity }
+            : { opacity }
+        }
+      >
+        <Grid className={classes.gridContainer} container>
+          <Grid className={classes.gridItem} item xs={1}>
+            <input
+              type='checkbox'
+              className={classes.checkBox}
+              onChange={() => checkBox(index, type)}
+              checked = {type}
+            />
+          </Grid>
+          <Grid
+            className={`${classes.gridItem} ${type ? classes.tilteFinish : classes.title}`}
+            item
+            xs={9}
+          >
+            {content.title}
+          </Grid>
+          <Grid className={classes.gridItem} item xs={1}>
+            <img
+              className={classes.star}
+              alt='star'
+              src={content.starSelect ? starSelect : star}
+              onClick={type ? null : () => starClick(index)}
+            />
+          </Grid>
+          <Grid className={classes.gridItem} item xs={12}>
+            {content.deadLine.length !== 0 && (
+              <img
+                className={classes.calendar}
+                alt='calendar'
+                src={calendar}
+              />
+            )}
+            {content.deadLine.length !== 0 && (
+              <p className={classes.time}>{content.deadLine.join(' ')}</p>
+            )}
+            {content.comment && (
+              <img
+                className={classes.comment}
+                alt='comment'
+                src={comment}
+                style={!content.deadLine.length ? { marginLeft: '4rem' } : {}}
+              />
+            )}
+          </Grid>
+        </Grid>
+      </li>
+    )
+
+    if (type)
+        return htmlContent()
     return connectDragSource(
       connectDropTarget(
-        <li
-          className={classes.root}
-          style={
-            content.starSelect
-              ? { backgroundColor: '#FFF2DC', opacity }
-              : { opacity }
-          }
-        >
-          <Grid className={classes.gridContainer} container>
-            <Grid className={classes.gridItem} item xs={1}>
-              <input
-                type='checkbox'
-                className={classes.checkBox}
-                onChange={() => checkBox(index, type)}
-              />
-            </Grid>
-            <Grid
-              className={`${classes.gridItem} ${type ? classes.tilteFinish : classes.title}`}
-              item
-              xs={9}
-            >
-              {content.title}
-            </Grid>
-            <Grid className={classes.gridItem} item xs={1}>
-              <img
-                className={classes.star}
-                alt='star'
-                src={content.starSelect ? starSelect : star}
-                onClick={type ? null : () => starClick(index)}
-              />
-            </Grid>
-            <Grid className={classes.gridItem} item xs={12}>
-              {content.deadLine.length !== 0 && (
-                <img
-                  className={classes.calendar}
-                  alt='calendar'
-                  src={calendar}
-                />
-              )}
-              {content.deadLine.length !== 0 && (
-                <p className={classes.time}>{content.deadLine.join(' ')}</p>
-              )}
-              {content.comment && (
-                <img
-                  className={classes.comment}
-                  alt='comment'
-                  src={comment}
-                  style={!content.deadLine.length ? { marginLeft: '4rem' } : {}}
-                />
-              )}
-            </Grid>
-          </Grid>
-        </li>
+        htmlContent()
       )
     )
   }
