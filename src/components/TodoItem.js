@@ -2,12 +2,15 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import { findDOMNode } from 'react-dom'
 import { DragSource, DropTarget } from 'react-dnd'
+import Popup from 'reactjs-popup'
 import Grid from '@material-ui/core/Grid'
 import PropTypes from 'prop-types'
+import AddItem from './AddItem'
 import star from '../img/star.svg'
 import starSelect from '../img/star_select.svg'
 import calendar from '../img/calendar.svg'
 import comment from '../img/comment.svg'
+import edit from '../img/edit.svg'
 
 const style = {
   root: {
@@ -133,6 +136,25 @@ const cardTarget = {
 }
 
 class TodoItem extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      open: false
+    }
+  }
+
+  openModel = () => {
+    this.setState({
+      open: true
+    })
+  }
+
+  closeModel = () => {
+    this.setState({
+      open: false
+    })
+  }
+
   render() {
     const {
       classes,
@@ -143,9 +165,10 @@ class TodoItem extends React.Component {
       isDragging,
       connectDragSource,
       connectDropTarget,
-      checkBox
+      checkBox,
+      editTask,
+      id
     } = this.props
-
     const opacity = isDragging ? 0 : 1
 
     const htmlContent = () => (
@@ -163,13 +186,15 @@ class TodoItem extends React.Component {
               type='checkbox'
               className={classes.checkBox}
               onChange={() => checkBox(index, type)}
-              checked = {type}
+              checked={type}
             />
           </Grid>
           <Grid
-            className={`${classes.gridItem} ${type ? classes.tilteFinish : classes.title}`}
+            className={`${classes.gridItem} ${
+              type ? classes.tilteFinish : classes.title
+            }`}
             item
-            xs={9}
+            xs={8}
           >
             {content.title}
           </Grid>
@@ -181,13 +206,36 @@ class TodoItem extends React.Component {
               onClick={type ? null : () => starClick(index)}
             />
           </Grid>
+          <Grid className={classes.gridItem} item xs={1}>
+            <img
+              className={classes.star}
+              alt='star'
+              src={edit}
+              onClick={type ? null : () => this.openModel()}
+            />
+            <Popup
+              open={this.state.open}
+              onClose={this.closeModel}
+              lockScroll={true}
+              contentStyle={{
+                display: 'flex',
+                justifyContent: 'center',
+                backgroundColor: 'unset',
+                border: 'none'
+              }}
+            >
+              <AddItem
+                addTask={editTask}
+                hideAddItem={this.closeModel}
+                data={content}
+                index={index}
+                id={id}
+              />
+            </Popup>
+          </Grid>
           <Grid className={classes.gridItem} item xs={12}>
             {content.deadLine.length !== 0 && (
-              <img
-                className={classes.calendar}
-                alt='calendar'
-                src={calendar}
-              />
+              <img className={classes.calendar} alt='calendar' src={calendar} />
             )}
             {content.deadLine.length !== 0 && (
               <p className={classes.time}>{content.deadLine.join(' ')}</p>
@@ -205,13 +253,8 @@ class TodoItem extends React.Component {
       </li>
     )
 
-    if (type)
-        return htmlContent()
-    return connectDragSource(
-      connectDropTarget(
-        htmlContent()
-      )
-    )
+    if (type) return htmlContent()
+    return connectDragSource(connectDropTarget(htmlContent()))
   }
 }
 
@@ -223,9 +266,11 @@ TodoItem.propTypes = {
   starClick: PropTypes.func.isRequired,
   checkBox: PropTypes.func.isRequired,
   type: PropTypes.number.isRequired,
+  editTask: PropTypes.func,
   isDragging: PropTypes.bool,
   connectDragSource: PropTypes.func,
-  connectDropTarget: PropTypes.func
+  connectDropTarget: PropTypes.func,
+  id: PropTypes.number
 }
 
 export default DropTarget('todoItem', cardTarget, connect => ({

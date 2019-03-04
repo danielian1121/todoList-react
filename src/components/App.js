@@ -40,11 +40,13 @@ class App extends React.Component {
       select: 0
     }
   }
-  addTask = ({ title, deadLine, comment, starSelect }) => {
+  addTask = ({ title, deadLine, date, hour, comment, starSelect }) => {
     const task = {
       id: this.state.count,
       title,
       deadLine,
+      date,
+      hour,
       comment,
       starSelect
     }
@@ -58,6 +60,23 @@ class App extends React.Component {
     this.setState({
       task: newTask,
       count: this.state.count + 1
+    })
+  }
+
+  editTask = ({ id, index, title, deadLine, date, hour, comment, starSelect }) => {
+    let newTask = [...this.state.task]
+    const task = {
+      id,
+      title,
+      deadLine,
+      date,
+      hour,
+      comment,
+      starSelect
+    }
+    newTask[index] = task
+    this.setState({
+      task: newTask
     })
   }
 
@@ -137,6 +156,8 @@ class App extends React.Component {
                 moveCard={this.moveCard}
                 checkBox={this.checkBox}
                 type={0} // Not finish
+                editTask={this.editTask}
+                id={element.id}
               />
             ))}
             {this.state.doneTask.map((element, index) => (
@@ -148,6 +169,8 @@ class App extends React.Component {
                 moveCard={this.moveCard}
                 checkBox={this.checkBox}
                 type={1} // Finish
+                editTask={this.editTask}
+                id={element.id}
               />
             ))}
           </TodoList>
@@ -164,6 +187,8 @@ class App extends React.Component {
                 moveCard={this.moveCard}
                 checkBox={this.checkBox}
                 type={0} // Not finish
+                editTask={this.editTask}
+                id={element.id}
               />
             ))}
           </TodoList>
@@ -180,6 +205,8 @@ class App extends React.Component {
                 moveCard={this.moveCard}
                 checkBox={this.checkBox}
                 type={1} // Finish
+                editTask={this.editTask}
+                id={element.id}
               />
             ))}
           </TodoList>
@@ -216,7 +243,12 @@ class App extends React.Component {
             {'+ Add Task'}
           </button>
         ) : (
-          <AddItem addTask={this.addTask} hideAddItem={this.handleButtonShow} />
+          <AddItem
+            addTask={this.addTask}
+            hideAddItem={this.handleButtonShow}
+            data={{ title: '', date: '', hour: '', comment: '' }}
+            index={null}
+          />
         )}
         {this.handleSelectPage(this.state.select)}
       </div>

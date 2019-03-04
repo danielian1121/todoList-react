@@ -100,11 +100,12 @@ const style = {
 class AddItem extends React.Component {
   constructor(props) {
     super(props)
+    const {title, date, hour, comment } = props.data
     this.state = {
-      title: '',
-      date: '',
-      hour: '',
-      comment: '',
+      title,
+      date,
+      hour,
+      comment,
       starSelect: false
     }
   }
@@ -135,8 +136,12 @@ class AddItem extends React.Component {
       alert('Title should not be empty')
     } else {
       this.props.addTask({
+        id: `${this.props.id}`,
+        index: `${this.props.index}`,
         title: `${this.state.title}`,
         deadLine: [this.state.date, this.state.hour].filter(element => element),
+        date: `${this.state.date}`,
+        hour: `${this.state.hour}`,
         comment: `${this.state.comment}`,
         starSelect: this.state.starSelect
       })
@@ -222,7 +227,9 @@ class AddItem extends React.Component {
 AddItem.propTypes = {
   classes: PropTypes.object.isRequired,
   addTask: PropTypes.func.isRequired,
-  hideAddItem: PropTypes.func.isRequired
+  hideAddItem: PropTypes.func.isRequired,
+  data: PropTypes.object.isRequired,
+  index: PropTypes.number
 }
 
 export default withStyles(style)(AddItem)
